@@ -21,14 +21,14 @@ class Dataset(TorchDataset):
        self.val_set = x_y_pairs[int(len(x_y_pairs)*train_size):]
     
     def __len__(self):
-      return len(self.train_set) ,len(self.val_set)
+      return len(self.train_set) #expects a single integer
     
     def __getitem__(self,idx):
         x, y = self.train_set[idx]
         return torch.tensor(x), torch.tensor(y)
+    
 
-
-
+data = Dataset(content,128,0.8)
 
 
 

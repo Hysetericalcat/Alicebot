@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset as TorchDataset
-import numpy as np
+
 
 
 
@@ -75,16 +75,37 @@ class TransformerBlock(nn.Module):
 
      return x
 
-       
-
-
-
-           
-   
-      
+# tokens = [batch_size,seq_len] 
+class Embedding(nn.Module):
      
+     def __init__(self,d_model,vocab_size,max_len):
+        super().__init__()
+        self.input_embedding = nn.Embedding(vocab_size, d_model) #3-D tensore
+        self.pos_emb = nn.Embedding(max_len,d_model) 
+
+     def forward(self ,tokens):
+       pos = torch.arange(0, tokens.shape[1])
+       return   self.input_embedding(tokens) +  self.pos_emb(pos) 
+
+
+
+class Model(nn.Module):
+
+    def __init__(self,vocab_size,block_size,n_head,d_model,n_layers):
+        super().__init__()
+        self.embed = Embedding(d_model,vocab_size,block_size)  
+        self.ln1 = nn.LayerNorm(d_model) 
+        self.lm_head = nn.Linear(d_model, vocab_size)
+        self.blocks = nn.ModuleList([TransformerBlock(n_head, d_model) for _ in range(n_layers)])
+   
+    def forward(self,tokens): 
+       y = self.embed(tokens)
+       for block in self.blocks:
+         y = block(y)
+       y = self.ln1(y)
+       y = self.lm_head(y) # No need to give y.shape[1]
+
+       return y
+
     
-
-      
-
-
+ 
