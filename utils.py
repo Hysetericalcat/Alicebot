@@ -26,7 +26,7 @@ class Self_Attention(nn.Module):
        #Causal mask (a token should not see the future values)
        scores = self.Q @ self.K_t / self.d_k ** 0.5
        seq_len = x.shape[1]
-       mask = torch.triu(torch.ones(seq_len,seq_len), diagonal=1).bool()
+       mask = torch.triu(torch.ones(seq_len, seq_len), diagonal=1).bool().to(x.device)
        scores = scores.masked_fill(mask, float('-inf'))  
        #dim = -1 ( means last dimension of a matrix w.r.t which the matrix will be normalised)
        self.Attention =(F.softmax(scores,dim=-1))@ self.V 
@@ -84,7 +84,7 @@ class Embedding(nn.Module):
         self.pos_emb = nn.Embedding(max_len,d_model) 
 
      def forward(self ,tokens):
-       pos = torch.arange(0, tokens.shape[1])
+       pos = torch.arange(0, tokens.shape[1]).to(tokens.device)
        return   self.input_embedding(tokens) +  self.pos_emb(pos) 
 
 

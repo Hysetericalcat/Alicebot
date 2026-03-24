@@ -28,7 +28,7 @@ class Dataset(TorchDataset):
         return torch.tensor(x), torch.tensor(y)
     
 
-data = Dataset(content,128,0.8)
+
 
 
 
